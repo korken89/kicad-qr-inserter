@@ -92,8 +92,26 @@
 		(uuid "c9c15e98-459e-408b-aea1-f8a209ec85de")
 	)
 	(gr_text_box "QR_MARKER"
-		(start 153 98)
-		(end 164 109)
+		(start 146 99.5)
+		(end 157 110.5)
+		(layer "B.SilkS")
+		(uuid "9b98e7b2-3ed8-4fb8-bee4-069946a0bea7")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.1)
+			)
+			(justify top mirror)
+		)
+		(border yes)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+	)
+	(gr_text_box "QR_MARKER"
+		(start 158 99.5)
+		(end 169 110.5)
 		(layer "F.SilkS")
 		(uuid "c5d1b517-e7e9-4d84-ad8d-b38560879a85")
 		(effects

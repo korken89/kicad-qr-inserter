@@ -140,5 +140,46 @@ def main():
             print(f"Textbox '{args.textbox_identifier}' not found on the PCB.")
         exit(1)
 
+def main():
+    parser = argparse.ArgumentParser(description="Generate a QR code and place it on a KiCAD PCB.")
+    parser.add_argument('input_file', help="Path to the input KiCAD PCB file.")
+    parser.add_argument('-o', '--output_file', help="Path to the output KiCAD PCB file. If not provided, overwrites the input file.", default=None)
+    parser.add_argument('-t', '--text_identifier', help="Text identifier to find on the PCB.", required=True)
+    parser.add_argument('-d', '--data', help="Data to encode in the QR code.", required=True)
+    parser.add_argument('-q', '--quiet', action='store_true', help="Suppress output messages.")
+
+    args = parser.parse_args()
+    board = pcbnew.LoadBoard(args.input_file)
+
+    replacement_count = 0
+    while True:
+        location = find_text_location(board, args.text_identifier)
+
+        if location:
+            x, y, width, layer = location
+            
+            if not args.quiet:
+                print(f"Found textbox '{args.text_identifier}' at location: X = {x:.2f} mm, Y = {y:.2f} mm")
+        
+            qr_image = generate_qr_code(args.data)
+            pixel_size = width / qr_image.width
+            insert_qr_to_pcb(qr_image, board, x - qr_image.width / 2 * pixel_size, y - qr_image.width / 2 * pixel_size, pixel_size, layer)
+
+            replacement_count += 1
+        else:
+            break  # No more matches found, exit the loop
+
+    output_file_path = args.output_file if args.output_file else args.input_file
+    pcbnew.SaveBoard(output_file_path, board)
+
+    if not args.quiet:
+        print(f"QR code added successfully. {replacement_count} replacements made. Saved to '{output_file_path}'.")
+    
+    if replacement_count == 0:
+        if not args.quiet:
+            print(f"No matches found for '{args.text_identifier}'.")
+        sys.exit(1)
+
+
 if __name__ == "__main__":
     main()
